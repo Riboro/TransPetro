@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block titulo %}Tópicos{% endblock %}
+{% block conteudo %}
+<h1>Tópicos</h1>
+<section class="painel">
+  <h2>Novo tópico</h2>
+  {% if erro %}<div class="erro-msg" role="alert">{{ erro }}</div>{% endif %}
+  <form method="post" action="/topicos" class="linha-form">
+    <label class="campo" for="nome" style="position:absolute;left:-9999px">Nome do tópico</label>
+    <input type="text" id="nome" name="nome" placeholder="Ex.: Direito Administrativo" required>
+    <button class="btn azul" type="submit">Adicionar tópico</button>
+  </form>
+</section>
+
+<div class="grid" style="grid-template-columns:1fr">
+  {% for t in topicos %}
+  <div class="card item">
+    <a class="corpo" href="/questoes?topico_id={{ t.id }}">
+      <b>{{ t.nome }}</b>
+      <div class="suave">{{ t.questoes|length }} quest{{ 'ões' if t.questoes|length != 1 else 'ão' }}</div>
+    </a>
+    <a class="btn" href="/questoes/nova?topico_id={{ t.id }}">Nova questão</a>
+    <form method="post" action="/topicos/{{ t.id }}/excluir"
+          onsubmit="return confirm('Excluir este tópico e todas as suas questões? As respostas dadas a elas também serão apagadas.')">
+      <button class="btn perigo" type="submit">Excluir</button>
+    </form>
+  </div>
+  {% else %}
+  <p class="suave">Nenhum tópico ainda. Adicione o primeiro acima.</p>
+  {% endfor %}
+</div>
+{% endblock %}

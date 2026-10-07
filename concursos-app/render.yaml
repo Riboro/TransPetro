@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: concursos-app
+    runtime: python
+    rootDir: concursos-app
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: DATABASE_URL   # cole a connection string do Neon (com ?sslmode=require)
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true

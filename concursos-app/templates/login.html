@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Entrar' if modo == 'login' else 'Criar conta' }}{% endblock %}
+{% block conteudo %}
+<section class="painel login">
+  <h1>{{ 'Entrar' if modo == 'login' else 'Criar conta' }}</h1>
+  <p class="suave">Estude por tópicos e acompanhe o quanto você realmente domina cada questão.</p>
+  {% if erro %}<div class="erro-msg" role="alert">{{ erro }}</div>{% endif %}
+  <form method="post" action="/{{ 'login' if modo == 'login' else 'registro' }}">
+    <label class="campo" for="username">Usuário</label>
+    <input type="text" id="username" name="username" autocomplete="username" required>
+    <label class="campo" for="password">Senha</label>
+    <input type="password" id="password" name="password" autocomplete="{{ 'current-password' if modo == 'login' else 'new-password' }}" required>
+    <button class="btn azul grande" type="submit">{{ 'Entrar' if modo == 'login' else 'Criar conta' }}</button>
+  </form>
+  <p class="suave" style="margin-top:24px">
+    {% if modo == 'login' %}Ainda não tem conta? <a href="/registro"><b>Criar conta</b></a>
+    {% else %}Já tem conta? <a href="/login"><b>Entrar</b></a>{% endif %}
+  </p>
+</section>
+{% endblock %}

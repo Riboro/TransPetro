@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Questões{% endblock %}
+{% block conteudo %}
+<div class="cabeca">
+  <h1>Questões</h1>
+  <a class="btn azul" href="/questoes/nova{{ '?topico_id=' ~ topico_id if topico_id }}">Nova questão</a>
+</div>
+<div class="filtros">
+  <a class="btn {{ 'ativo azul' if not topico_id }}" href="/questoes">Todas</a>
+  {% for t in topicos %}
+  <a class="btn {{ 'ativo azul' if topico_id == t.id }}" href="/questoes?topico_id={{ t.id }}">{{ t.nome }}</a>
+  {% endfor %}
+</div>
+
+<div class="grid" style="grid-template-columns:1fr">
+  {% for q in questoes %}
+  {% set r = ult.get(q.id) %}
+  <div class="card item">
+    <a class="corpo" href="/questoes/{{ q.id }}">
+      <div class="acoes">
+        <span class="suave">{{ q.topico.nome }}</span>
+        {% if r %}<span class="selo {{ 'ok' if r.acertou else 'erro' }}">{{ 'Acertou' if r.acertou else 'Errou' }} · {{ niveis_txt[r.nivel_confianca] }}</span>
+        {% else %}<span class="selo suave">Não respondida</span>{% endif %}
+      </div>
+      <p style="margin:10px 0 0">{{ q.enunciado[:160] }}{{ '…' if q.enunciado|length > 160 }}</p>
+    </a>
+    <form method="post" action="/questoes/{{ q.id }}/excluir"
+          onsubmit="return confirm('Excluir esta questão? As respostas dadas a ela também serão apagadas.')">
+      <button class="btn perigo" type="submit">Excluir</button>
+    </form>
+  </div>
+  {% else %}
+  <p class="suave">Nenhuma questão aqui ainda. Use “Nova questão” para criar a primeira.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}Painel{% endblock %}
+{% block conteudo %}
+<h1>Olá, {{ user.username }}</h1>
+
+<div class="grid">
+  <div class="card"><div class="suave">Respondidas</div><div class="numero">{{ total }}</div></div>
+  <div class="card"><div class="suave">Acertos</div><div class="numero">{{ acertos }}</div></div>
+  <div class="card"><div class="suave">Aproveitamento</div><div class="numero">{{ pct }}%</div>
+    <div class="trilho"><i style="width:{{ pct }}%"></i></div></div>
+</div>
+
+<section class="painel">
+  <h2>Acertos por nível de confiança</h2>
+  <p class="suave">Se você “domina” e erra, vale revisar o conteúdo. Se “chuta” e acerta, ainda não é conhecimento firme.</p>
+  <div class="grid" style="margin:0">
+    {% for n in por_nivel %}
+    <div class="card">
+      <b>{{ n.nome }}</b>
+      <div class="suave">{{ n.total }} resposta{{ '' if n.total == 1 else 's' }}</div>
+      <div class="numero">{{ n.taxa }}%</div>
+      <div class="trilho"><i style="width:{{ n.taxa }}%"></i></div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<h2>Tópicos</h2>
+<div class="grid">
+  {% for t in topicos %}
+  <a class="card link" href="/questoes?topico_id={{ t.id }}">
+    <b>{{ t.nome }}</b>
+    <div class="suave">{{ t.questoes|length }} quest{{ 'ões' if t.questoes|length != 1 else 'ão' }}</div>
+  </a>
+  {% else %}
+  <p class="suave">Nenhum tópico cadastrado ainda.</p>
+  {% endfor %}
+</div>
+<a class="btn azul grande" href="/questoes">Estudar agora</a>
+{% endblock %}

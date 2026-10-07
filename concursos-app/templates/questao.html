@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block titulo %}Questão {{ q.id }}{% endblock %}
+{% block conteudo %}
+<div class="acoes">
+  <a class="btn" href="/questoes?topico_id={{ q.topico_id }}">Voltar</a>
+  {% if prox and not mostrar %}<a class="btn" href="/questoes/{{ prox }}">Pular para a próxima não respondida</a>{% endif %}
+</div>
+<section class="painel" style="margin-top:24px">
+  <p class="suave">{{ q.topico.nome }} · Questão {{ q.id }}</p>
+  <p class="enunciado">{{ q.enunciado }}</p>
+
+  {% if mostrar %}
+  <div class="feedback {{ 'ok' if ult.acertou else 'erro' }}" role="status">
+    {% if ult.acertou %}Você acertou! A resposta é a alternativa {{ q.resposta_correta }}.
+    {% else %}Você marcou {{ ult.alternativa_escolhida }}, mas a correta é a alternativa {{ q.resposta_correta }}.{% endif %}
+    <span class="suave">Confiança registrada: {{ niveis[ult.nivel_confianca] }}.</span>
+    <div style="margin-top:16px">
+      {% if prox %}<a class="btn azul" href="/questoes/{{ prox }}">Próxima não respondida</a>
+      {% else %}<span class="suave">Você já respondeu todas as questões deste tópico.</span>
+        <a class="btn" href="/questoes?topico_id={{ q.topico_id }}">Ver lista</a>{% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <form method="post" action="/questoes/{{ q.id }}/responder">
+    <h2>Sua resposta</h2>
+    <fieldset class="grupo" style="border:0">
+      <legend class="suave" style="position:absolute;left:-9999px">Alternativas</legend>
+      {% for letra, texto in opcoes %}
+      <div class="opcao">
+        <input type="radio" name="alternativa" id="alt{{ letra }}" value="{{ letra }}" required>
+        <label for="alt{{ letra }}"><span class="letra">{{ letra }}</span><span>{{ texto }}</span></label>
+      </div>
+      {% endfor %}
+    </fieldset>
+
+    <h2>Qual é o seu nível de confiança?</h2>
+    <fieldset class="grupo" style="border:0">
+      <legend class="suave" style="position:absolute;left:-9999px">Nível de confiança</legend>
+      <div class="confianca">
+        {% for n, nome in niveis.items() %}
+        <div class="opcao">
+          <input type="radio" name="nivel_confianca" id="nivel{{ n }}" value="{{ n }}" required>
+          <label for="nivel{{ n }}"><span>{{ nome }}</span><small>nível {{ n }}</small></label>
+        </div>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <div class="acoes">
+      <span class="suave">Escolha uma alternativa e um nível de confiança para enviar.</span>
+      <button class="btn azul grande" type="submit">Responder</button>
+    </div>
+  </form>
+  <form method="post" action="/questoes/{{ q.id }}/excluir" style="margin-top:24px"
+        onsubmit="return confirm('Excluir esta questão? As respostas dadas a ela também serão apagadas.')">
+    <button class="btn perigo" type="submit">Excluir questão</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block titulo %}Nova questão{% endblock %}
+{% block conteudo %}
+<h1>Nova questão</h1>
+<section class="painel">
+  {% if erro %}<div class="erro-msg" role="alert">{{ erro }}</div>{% endif %}
+  {% if not topicos %}
+    <p>Antes de criar questões, <a href="/topicos"><b>adicione um tópico</b></a>.</p>
+  {% else %}
+  <form method="post" action="/questoes/nova">
+    <label class="campo" for="topico_id">Tópico</label>
+    <select id="topico_id" name="topico_id" required>
+      <option value="" disabled {{ 'selected' if not v.get('topico_id') }}>Escolha um tópico</option>
+      {% for t in topicos %}
+      <option value="{{ t.id }}" {{ 'selected' if v.get('topico_id') == t.id }}>{{ t.nome }}</option>
+      {% endfor %}
+    </select>
+
+    <label class="campo" for="enunciado">Enunciado</label>
+    <textarea id="enunciado" name="enunciado" required>{{ v.get('enunciado', '') }}</textarea>
+
+    {% for l in letras %}
+    <label class="campo" for="opcao_{{ l|lower }}">Alternativa {{ l }}</label>
+    <input type="text" id="opcao_{{ l|lower }}" name="opcao_{{ l|lower }}" value="{{ v.get('opcao_' ~ l|lower, '') }}" required>
+    {% endfor %}
+
+    <h2>Qual é a alternativa correta?</h2>
+    <fieldset class="grupo" style="border:0">
+      <legend style="position:absolute;left:-9999px">Alternativa correta</legend>
+      <div class="confianca cinco">
+        {% for l in letras %}
+        <div class="opcao">
+          <input type="radio" name="resposta_correta" id="correta{{ l }}" value="{{ l }}" {{ 'checked' if v.get('resposta_correta') == l }} required>
+          <label for="correta{{ l }}"><span>{{ l }}</span></label>
+        </div>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <div class="acoes">
+      <a class="btn" href="/questoes">Cancelar</a>
+      <button class="btn azul grande" type="submit">Salvar questão</button>
+    </div>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

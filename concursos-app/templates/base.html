@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Estudos para Concursos{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+  {% if user %}
+  <nav class="nav">
+    <a class="marca" href="/dashboard">Estudos para Concursos</a>
+    <a class="btn" href="/dashboard">Painel</a>
+    <a class="btn" href="/topicos">Tópicos</a>
+    <a class="btn" href="/questoes">Questões</a>
+    <a class="btn" href="/logout">Sair</a>
+  </nav>
+  {% endif %}
+  <main class="container">{% block conteudo %}{% endblock %}</main>
+</body>
+</html>
