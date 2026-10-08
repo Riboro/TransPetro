@@ -1,4 +1,5 @@
 import os, hmac, hashlib
+from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
@@ -57,8 +58,11 @@ async def lifespan(app):
 app = FastAPI(title="Estudos para Concursos", lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "dev-troque-em-producao"),
                    max_age=60 * 60 * 24 * 14, https_only=bool(os.getenv("RENDER")))
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+BASE_DIR = Path(__file__).resolve().parent  # funciona mesmo se o uvicorn for iniciado de outra pasta
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+# versão do CSS = data de modificação do arquivo; muda a cada deploy e obriga o navegador a baixar o CSS novo
+templates.env.globals["css_v"] = int((BASE_DIR / "static" / "style.css").stat().st_mtime)
 
 
 def go(url: str):
