@@ -1,0 +1,21 @@
+# Ambientes virtuais e cache do Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Segredos (a connection string do Neon fica aqui)
+.env
+
+# Bancos locais (o de produção é o Neon)
+*.db
+*.sqlite3
+
+# Pacotes gerados
+*.zip
+
+# IDE / sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
