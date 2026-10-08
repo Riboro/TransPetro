@@ -29,7 +29,9 @@ def check_pw(senha: str, guardado: str) -> bool:
 # ---------- app ----------
 def seed():
     with SessionLocal() as db:
-        if db.query(Topico).count():
+        # Só popula um banco REALMENTE novo. Antes, bastava não haver tópicos (por exemplo, depois de
+        # você excluí-los) para os exemplos serem recriados a cada deploy/reinício.
+        if db.query(Usuario).count() or db.query(Topico).count():
             return
         t1, t2 = Topico(nome="Direito Constitucional"), Topico(nome="Português")
         db.add_all([t1, t2]); db.flush()
