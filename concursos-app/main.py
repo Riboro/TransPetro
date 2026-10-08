@@ -180,17 +180,35 @@ def ultima_resposta(db, uid, qid):
             .order_by(RespostaUsuario.id.desc()).first())
 
 
+def link_questoes(topico_id=None, nivel=None):
+    """Monta a URL da lista preservando os dois filtros (tema e nível)."""
+    p = []
+    if topico_id: p.append(f"topico_id={topico_id}")
+    if nivel is not None: p.append(f"nivel={nivel}")
+    return "/questoes" + ("?" + "&".join(p) if p else "")
+
+
 @app.get("/questoes")
-def lista(request: Request, topico_id: int | None = None, db: Session = Depends(get_db)):
+def lista(request: Request, topico_id: int | None = None, nivel: int | None = None,
+          db: Session = Depends(get_db)):
     u = usuario_atual(request, db)
     if not u: return go("/login")
+    if nivel not in (0, 1, 2, 3, 4):  # 0 = ainda não respondidas; 1-4 = nível de confiança da última resposta
+        nivel = None
     q = db.query(Questao)
     if topico_id: q = q.filter(Questao.topico_id == topico_id)
+    todas = q.order_by(Questao.id).all()
     ult = {}
     for r in db.query(RespostaUsuario).filter_by(usuario_id=u.id).order_by(RespostaUsuario.id):
-        ult[r.questao_id] = r
+        ult[r.questao_id] = r  # a última resposta de cada questão prevalece
+    nivel_de = lambda x: ult[x.id].nivel_confianca if x.id in ult else 0
+    contagem = {n: 0 for n in range(5)}  # quantas questões em cada nível (dentro do tema escolhido)
+    for x in todas:
+        contagem[nivel_de(x)] += 1
+    questoes = todas if nivel is None else [x for x in todas if nivel_de(x) == nivel]
     return render(request, "questoes.html", {
-        "user": u, "questoes": q.order_by(Questao.id).all(), "ult": ult, "niveis_txt": NIVEIS,
+        "user": u, "questoes": questoes, "ult": ult, "niveis_txt": NIVEIS, "nivel": nivel,
+        "contagem": contagem, "total": len(todas), "link": link_questoes,
         "topicos": db.query(Topico).order_by(Topico.nome).all(), "topico_id": topico_id})
 
 

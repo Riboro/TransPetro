@@ -5,10 +5,21 @@
   <h1>Questões</h1>
   <a class="btn azul" href="/questoes/nova{{ '?topico_id=' ~ topico_id if topico_id }}">Nova questão</a>
 </div>
-<div class="filtros">
-  <a class="btn {{ 'ativo azul' if not topico_id }}" href="/questoes">Todas</a>
+
+<p class="suave" style="margin:0 0 10px 6px;font-weight:700">Tema</p>
+<div class="filtros" style="margin-bottom:20px">
+  <a class="btn {{ 'ativo azul' if not topico_id }}" href="{{ link(None, nivel) }}">Todos</a>
   {% for t in topicos %}
-  <a class="btn {{ 'ativo azul' if topico_id == t.id }}" href="/questoes?topico_id={{ t.id }}">{{ t.nome }}</a>
+  <a class="btn {{ 'ativo azul' if topico_id == t.id }}" href="{{ link(t.id, nivel) }}">{{ t.nome }}</a>
+  {% endfor %}
+</div>
+
+<p class="suave" style="margin:0 0 10px 6px;font-weight:700">Nível de domínio</p>
+<div class="filtros">
+  <a class="btn {{ 'ativo azul' if nivel is none }}" href="{{ link(topico_id, None) }}">Todos ({{ total }})</a>
+  <a class="btn {{ 'ativo azul' if nivel == 0 }}" href="{{ link(topico_id, 0) }}">Não respondidas ({{ contagem[0] }})</a>
+  {% for n, nome in niveis_txt.items() %}
+  <a class="btn {{ 'ativo azul' if nivel == n }}" href="{{ link(topico_id, n) }}">{{ n }} · {{ nome }} ({{ contagem[n] }})</a>
   {% endfor %}
 </div>
 
@@ -30,7 +41,7 @@
     </form>
   </div>
   {% else %}
-  <p class="suave">Nenhuma questão aqui ainda. Use “Nova questão” para criar a primeira.</p>
+  <p class="suave">{% if topico_id or nivel is not none %}Nenhuma questão com esses filtros.{% else %}Nenhuma questão aqui ainda. Use “Nova questão” para criar a primeira.{% endif %}</p>
   {% endfor %}
 </div>
 {% endblock %}
