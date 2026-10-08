@@ -101,3 +101,16 @@ textarea:focus,select:focus{box-shadow:var(--afundado),0 0 0 3px var(--azul)}
 .item{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
 .item .corpo{flex:1;min-width:220px}
 .item form{margin:0}
+
+/* ===== Modo escuro (neomorfismo escuro) ===== */
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#2a2d37; --luz:#363a48; --sombra:#1a1c23;
+  --azul:#3b6ef5; --azul-esc:#2a55d1; --azul-cl:#5d8bff;
+  --texto:#e4e7f2; --suave:#9aa1ba; --ok:#3ecf94; --erro:#ff6b81;
+}
+select option{background:var(--bg);color:var(--texto)}
+input::placeholder{color:var(--suave)}
+
+/* botão de tema */
+.tema-flutuante{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));right:16px;z-index:10}
