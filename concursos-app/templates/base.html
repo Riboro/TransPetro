@@ -2,8 +2,14 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{% block titulo %}Estudos para Concursos{% endblock %}</title>
+  <script>
+    /* aplica o tema antes de desenhar a página (evita piscar): escolha salva ou preferência do sistema */
+    (function(){var t=null;try{t=localStorage.getItem('tema')}catch(e){}
+    if(t!=='dark'&&t!=='light'){t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'}
+    document.documentElement.setAttribute('data-theme',t)})();
+  </script>
   <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
 </head>
 <body>
@@ -13,9 +19,28 @@
     <a class="btn" href="/dashboard">Painel</a>
     <a class="btn" href="/topicos">Tópicos</a>
     <a class="btn" href="/questoes">Questões</a>
+    <button type="button" class="btn" data-tema-toggle aria-pressed="false">☾ Modo escuro</button>
     <a class="btn" href="/logout">Sair</a>
   </nav>
+  {% else %}
+  <button type="button" class="btn tema-flutuante" data-tema-toggle aria-pressed="false">☾ Modo escuro</button>
   {% endif %}
   <main class="container">{% block conteudo %}{% endblock %}</main>
+  <script>
+    (function(){
+      var root=document.documentElement, botoes=document.querySelectorAll('[data-tema-toggle]');
+      function atualizar(){
+        var escuro=root.getAttribute('data-theme')==='dark';
+        botoes.forEach(function(b){b.textContent=escuro?'☀ Modo claro':'☾ Modo escuro';b.setAttribute('aria-pressed',escuro)});
+      }
+      botoes.forEach(function(b){b.addEventListener('click',function(){
+        var novo=root.getAttribute('data-theme')==='dark'?'light':'dark';
+        root.setAttribute('data-theme',novo);
+        try{localStorage.setItem('tema',novo)}catch(e){}
+        atualizar();
+      })});
+      atualizar();
+    })();
+  </script>
 </body>
 </html>
